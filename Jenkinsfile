@@ -19,6 +19,7 @@ stage( 'BUILD' )
 sh "${mavenHome}/bin/mvn clean package"
 }
 
+/*
 stage( 'EXECUTE SONARQUBE REPORT' )
 {
 sh "${mavenHome}/bin/mvn sonar:sonar"
@@ -44,5 +45,5 @@ REGARDS,
 RAMESH TECHNOLOGIES,
 8688551572.''', subject: 'BUILD OVER...', to: 'ramesh95usg@gmail.com'
 }
-
+*/
 }
