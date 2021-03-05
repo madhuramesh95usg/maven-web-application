@@ -1,0 +1,83 @@
+pipeline{
+
+agent any;
+
+tools{
+
+maven 'maven3.6.3'
+
+}
+
+
+options{
+timestamps()
+
+
+}
+
+
+stages{
+
+           stage( 'CHECKOUT THE CODE' ){
+              steps{
+                   git branch: 'development', credentialsId: '96794d51-ffbf-4a77-89c1-3ae358f2b908', url: 'https://github.com/madhuramesh95usg/maven-web-application.git'
+                }
+             }
+
+             stage( 'BUILD' ){
+                steps{
+                  sh "mvn clean package"
+                  }
+               }
+              
+
+               stage( 'EXECUTE SONARQUBE REPORT' ){
+                  steps{
+                  sh "mvn sonar:sonar"
+                  } 
+                 }
+
+               stage( 'Upload Artifacts Into Nexus' ){
+                  steps{
+                  sh "mvn deploy"
+                  } 
+                 }
+               
+                stage( 'DEPLOY APPL INTO TOMCAT SERVER' ){
+                steps{
+                   sshagent(['82a1bd50-05a6-4adc-859e-29cf9a65a68c']) {
+  sh "scp -o  StrictHostKeyChecking=no  target/maven-web-application.war ec2-user@52.66.210.76:/opt/apache-tomcat-9.0.41/webapps/"
+                 }
+                 }
+                 }
+         
+             
+}
+
+
+  post{
+  
+
+                    success{
+
+                            mail  body: '''BUILD OVER!...success
+
+REGARDS,
+RAMESH TECHNOLOGIES,
+8688551572.''', subject: 'BUILD OVER...successful', to: 'ramesh95usg@gmail.com'
+               }
+
+              failure{
+              
+                          mail  body: '''BUILD OVER!...failed
+
+REGARDS,
+RAMESH TECHNOLOGIES,
+8688551572.''', subject: 'BUILD OVER...failed', to: 'ramesh95usg@gmail.com'
+  }
+           
+        
+}
+
+
+}
